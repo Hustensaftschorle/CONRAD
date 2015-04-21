@@ -88,7 +88,7 @@ public class MarkerDetectionWorker {
 
 	protected ImagePlus image = null;
 
-	private String filenamePriors = null;
+	protected String filenamePriors = null;
 
 	public MarkerDetectionWorker(){
 		threeDPos = null;

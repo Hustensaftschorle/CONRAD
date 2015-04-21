@@ -40,7 +40,7 @@ public class AutomaticMarkerDetectionWorker extends MarkerDetectionWorker{
 	 */
 
 
-	int nrOfBeads = -1;
+	protected int nrOfBeads = -1;
 
 	public AutomaticMarkerDetectionWorker(){
 		super();
@@ -82,7 +82,7 @@ public class AutomaticMarkerDetectionWorker extends MarkerDetectionWorker{
 	}
 
 
-	private void initializeMarkerPositions(int nrOfMarkers){
+	protected void initializeMarkerPositions(int nrOfMarkers){
 		fastRadialSymmetrySpace = FRST();
 		Grid3D frst = new Grid3D(fastRadialSymmetrySpace);
 		initializeMarkerPositions(frst, false);
@@ -119,7 +119,7 @@ public class AutomaticMarkerDetectionWorker extends MarkerDetectionWorker{
 	}
 
 
-	private void initializeMarkerPositions(Grid3D frst, boolean findMaximumOnly){
+	protected void initializeMarkerPositions(Grid3D frst, boolean findMaximumOnly){
 		// Calculate the FRST -> subtract threshold -> set minimum to 0 ->  apply 2D Gauss -> backproject
 
 		Grid3D	frstIn = new Grid3D(frst);
@@ -163,7 +163,7 @@ public class AutomaticMarkerDetectionWorker extends MarkerDetectionWorker{
 
 		// Use Maximum Entropy thresholding technique in 3D to find a suitable threshold
 		ImagePlus ip = ImageUtil.wrapGrid3D(tmp, "Bead Reconstruction");
-		ip.show();
+//		ip.show();
 		IJ.run(ip, "Gaussian Blur 3D...", "x=2 y=2 z=2");
 
 		//ip.getProcessor().setAutoThreshold("MaxEntropy dark stack");

@@ -116,7 +116,7 @@ public class ParallelImageFilterPipeliner {
 		}
 		if (debug) System.out.println("ParallelImageFilterPipeliner: Projections Streamed.");
 		currentSink.close();
-		this.sink.getResult();
+//		this.sink.getResult();
 		if (debug) System.out.println("ParallelImageFilterPipeliner: All Processors done.");
 	}
 
