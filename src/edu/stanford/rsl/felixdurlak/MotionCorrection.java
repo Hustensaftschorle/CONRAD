@@ -2,10 +2,15 @@ package edu.stanford.rsl.felixdurlak;
 
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
 import javax.swing.SpinnerNumberModel;
+
+import org.math.plot.Plot2DPanel;
 
 import ij.ImageJ;
 import ij.io.Opener;
+import edu.mines.jtk.util.Array;
+import edu.stanford.rsl.conrad.geometry.splines.UniformCubicBSpline;
 import edu.stanford.rsl.conrad.utils.CONRAD;
 import edu.stanford.rsl.conrad.utils.Configuration;
 import edu.stanford.rsl.conrad.utils.FileUtil;
@@ -21,14 +26,16 @@ public class MotionCorrection {
 	private boolean autoDetection = true;
 	private boolean refinement = true;
 	private int numberOfBeads = 16;
-	private double binarizationThreshold = 0.2;
+	private double binarizationThreshold = 0.08;
 	private double circularity = 3;
 	private double gradientThreshold = 0;
-	private double distance = 3;
+	private double distance = 200;
 	private String blobRadii = "[3]";
 	private double numberOfIterations = 10;
-	
-	
+	private static ArrayList<ArrayList<double[]>> measuredTwoDPoints = null;
+	private static ArrayList<double[]> referenceThreeDPoints = null;
+
+
 	private String filename = "G:\\Projektionsdaten\\CONRAD.xml";
 
 
@@ -41,13 +48,21 @@ public class MotionCorrection {
 		pWorker = new MarkerDetectionWorker();
 		updateParameters();
 
-//		// show projections
-//		Opener op = new Opener();
-//		op.openImage(path).show();
+		//		// show projections
+		//		Opener op = new Opener();
+		//		op.openImage(path).show();
 	}
-	
+
 	protected static String getPath() {
 		return path;
+	}
+	
+	protected static ArrayList<double[]> getReferenceThreeDPoints() {
+		return referenceThreeDPoints;
+	}
+	
+	protected static ArrayList<ArrayList<double[]>> getMeasuredTwoDPoints() {
+		return measuredTwoDPoints;
 	}
 
 	private void updateParameters(){
@@ -63,7 +78,7 @@ public class MotionCorrection {
 		}
 
 	}
-	
+
 	private void runDetection(){
 		// run Detection numberOfIterations times
 		try {
@@ -76,25 +91,71 @@ public class MotionCorrection {
 		}
 
 	}
-	
+
 
 	public static void main(String[] args) {
 
 		MotionCorrection mc = new MotionCorrection();
-		
+
 		// load config
 		Configuration config = Configuration.loadConfiguration(mc.filename);
 		if (config !=null) {
 			Configuration.setGlobalConfiguration(config);
 		}
-		
+
 		mc.runDetection();
+
+		measuredTwoDPoints = mc.pWorker.getMeasuredTwoDPoints();
+		//		ArrayList<ArrayList<double[]>> mergedTwoDPositions = mc.pWorker.getMergedTwoDPositions();
+		referenceThreeDPoints = mc.pWorker.getReferenceThreeDPoints();
+
+		//		for (int i = 0; i<16; i++){
+		//			System.out.println(measuredTwoDPoints.get(i).size());					
+		//		}
+
+		ArrayList<double[]> xPointsList = new ArrayList<double[]>();
+		ArrayList<double[]> yPointsList = new ArrayList<double[]>();
+
+		// create your PlotPanel (you can use it as a JPanel)
+		Plot2DPanel plot = new Plot2DPanel();
+
+		double[] xValuesTest = new double[248];
+		double[] yValuesTest  = new double[248];
 		
-		ArrayList<ArrayList<double[]>> measuredTwoDPoints = mc.pWorker.getMeasuredTwoDPoints();
-		ArrayList<ArrayList<double[]>> mergedTwoDPositions = mc.pWorker.getMergedTwoDPositions();
-		ArrayList<double[]> referenceThreeDPoints = mc.pWorker.getReferenceThreeDPoints();
 		
-//		new ImageJ();
+		for (int i = 0; i < measuredTwoDPoints.size(); i++){
+			double[] xValues = new double[248];
+			double[] yValues = new double[248];
+			for (int j = 0; j < measuredTwoDPoints.get(i).size(); j++){
+				xValues[(int) measuredTwoDPoints.get(i).get(j)[2]] = measuredTwoDPoints.get(i).get(j)[0];
+				yValues[(int) measuredTwoDPoints.get(i).get(j)[2]] = measuredTwoDPoints.get(i).get(j)[1];
+			}
+			
+			// just for testing
+			if (i == 0){
+				xValuesTest = Array.copy(xValues);
+				yValuesTest = Array.copy(yValues);
+			}
+			
+			
+			xPointsList.add(xValues);
+			yPointsList.add(yValues);
+			
+		}
+
+		// add a line plot to the PlotPanel
+		plot.addScatterPlot("xTest", xPointsList.get(0));
+		// put the PlotPanel in a JFrame, as a JPanel
+		JFrame frame = new JFrame("a plot panel");
+		frame.setSize(600, 600);
+		frame.setContentPane(plot);
+		frame.setVisible(true);
+
+		
+//		UniformCubicBSpline cspline = new UniformCubicBSpline(spline.getControlPoints(), spline.getKnots());
+
+
+		
 
 	}
 
