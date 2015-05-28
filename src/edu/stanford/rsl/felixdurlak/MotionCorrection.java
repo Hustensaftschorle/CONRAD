@@ -14,6 +14,8 @@ import edu.stanford.rsl.conrad.geometry.splines.UniformCubicBSpline;
 import edu.stanford.rsl.conrad.utils.CONRAD;
 import edu.stanford.rsl.conrad.utils.Configuration;
 import edu.stanford.rsl.conrad.utils.FileUtil;
+import edu.stanford.rsl.jpop.FunctionOptimizer;
+import edu.stanford.rsl.jpop.FunctionOptimizer.OptimizationMode;
 import edu.stanford.rsl.apps.gui.RawDataOpener;
 import edu.stanford.rsl.apps.gui.blobdetection.AutomaticMarkerDetectionWorker;
 import edu.stanford.rsl.apps.gui.blobdetection.MarkerDetectionWorker;
@@ -90,6 +92,24 @@ public class MotionCorrection {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public double[] optimize(){
+		FunctionOptimizer fo = new FunctionOptimizer();
+		fo.setDimension(6);
+		fo.setOptimizationMode(OptimizationMode.Function);
+		fo.setConsoleOutput(false);
+		double[] x = new double[6];
+		fo.setInitialX(x);
+		double min = -10;
+		double max = 10;
+		fo.setMinima(new double[]{min, min, min, min, min, min});
+		fo.setMaxima(new double[]{max, max, max, max, max, max});
+		
+		Optimization optimizationFunction = new Optimization();
+		double [] result = fo.optimizeFunction(optimizationFunction);
+		
+		return result;		
 	}
 
 

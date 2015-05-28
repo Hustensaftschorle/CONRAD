@@ -9,6 +9,7 @@ import edu.stanford.rsl.conrad.numerics.SimpleVector;
 import edu.stanford.rsl.conrad.utils.Configuration;
 import edu.stanford.rsl.jpop.GradientOptimizableFunction;
 
+
 public class Optimization implements GradientOptimizableFunction{
 
 	@Override
@@ -23,6 +24,13 @@ public class Optimization implements GradientOptimizableFunction{
 
 	@Override
 	public double evaluate(double[] x, int block) {
+		
+		// convert values in x from degree to rad
+		for (int i = 0; i < x.length; i=i+6){
+			x[i] *= Math.PI/180;
+			x[i+1] *= Math.PI/180;
+			x[i+2] *= Math.PI/180;
+		}
 		
 		ArrayList<double[]> referenceThreeDPoints = MotionCorrection.getReferenceThreeDPoints();
 		
