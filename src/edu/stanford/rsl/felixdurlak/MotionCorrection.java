@@ -1,6 +1,8 @@
 package edu.stanford.rsl.felixdurlak;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 import javax.swing.SpinnerNumberModel;
@@ -14,6 +16,7 @@ import edu.stanford.rsl.conrad.geometry.splines.UniformCubicBSpline;
 import edu.stanford.rsl.conrad.utils.CONRAD;
 import edu.stanford.rsl.conrad.utils.Configuration;
 import edu.stanford.rsl.conrad.utils.FileUtil;
+import edu.stanford.rsl.conrad.utils.XmlUtils;
 import edu.stanford.rsl.jpop.FunctionOptimizer;
 import edu.stanford.rsl.jpop.FunctionOptimizer.OptimizationMode;
 import edu.stanford.rsl.apps.gui.RawDataOpener;
@@ -36,6 +39,8 @@ public class MotionCorrection {
 	private double numberOfIterations = 10;
 	private static ArrayList<ArrayList<double[]>> measuredTwoDPoints = null;
 	private static ArrayList<double[]> referenceThreeDPoints = null;
+	
+	private int numberOfProjections = 248;
 
 
 	private String filename = "G:\\Projektionsdaten\\CONRAD.xml";
@@ -96,23 +101,35 @@ public class MotionCorrection {
 	
 	public double[] optimize(){
 		FunctionOptimizer fo = new FunctionOptimizer();
-		fo.setDimension(6);
+		fo.setDimension(6*numberOfProjections);
 		fo.setOptimizationMode(OptimizationMode.Function);
 		fo.setConsoleOutput(false);
-		double[] x = new double[6];
+		double[] x = new double[6*numberOfProjections];
 		fo.setInitialX(x);
 		double min = -10;
 		double max = 10;
-		fo.setMinima(new double[]{min, min, min, min, min, min});
-		fo.setMaxima(new double[]{max, max, max, max, max, max});
+		double[] minArray = new double[6*numberOfProjections];
+		double[] maxArray = new double[6*numberOfProjections];
+		Arrays.fill(minArray, min);
+		Arrays.fill(maxArray, max);
+		fo.setMinima(minArray);
+		fo.setMaxima(maxArray);
 		
 		Optimization optimizationFunction = new Optimization();
 		double [] result = fo.optimizeFunction(optimizationFunction);
+		
+//		// convert values in result from rad to degree
+//		for (int i = 0; i < result.length; i=i+6){
+//			result[i] *= 180/Math.PI;
+//			result[i+1] *= 180/Math.PI;
+//			result[i+2] *= 180/Math.PI;
+//		}
 		
 		return result;		
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 
 		MotionCorrection mc = new MotionCorrection();
@@ -123,11 +140,33 @@ public class MotionCorrection {
 			Configuration.setGlobalConfiguration(config);
 		}
 
-		mc.runDetection();
+//		mc.runDetection();
+		
+		try {
+			measuredTwoDPoints = (ArrayList<ArrayList<double[]>>) XmlUtils.importFromXML("G:/Projektionsdaten/measured2D_13_06_15.xml");
+			referenceThreeDPoints = (ArrayList<double[]>) XmlUtils.importFromXML("G:/Projektionsdaten/reference3D_13_06_15.xml");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		measuredTwoDPoints = mc.pWorker.getMeasuredTwoDPoints();
+//		measuredTwoDPoints = mc.pWorker.getMeasuredTwoDPoints();
+//		referenceThreeDPoints = mc.pWorker.getReferenceThreeDPoints();
+		
+//		try {
+//			XmlUtils.exportToXML(measuredTwoDPoints);
+//			XmlUtils.exportToXML(mc.pWorker.getMergedTwoDPositions());
+//			XmlUtils.exportToXML(mc.pWorker.getReferenceThreeDPoints());
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		//		ArrayList<ArrayList<double[]>> mergedTwoDPositions = mc.pWorker.getMergedTwoDPositions();
-		referenceThreeDPoints = mc.pWorker.getReferenceThreeDPoints();
+		
+		
+		@SuppressWarnings("unused")
+		double [] result = mc.optimize();
 
 		//		for (int i = 0; i<16; i++){
 		//			System.out.println(measuredTwoDPoints.get(i).size());					
@@ -139,25 +178,28 @@ public class MotionCorrection {
 		// create your PlotPanel (you can use it as a JPanel)
 		Plot2DPanel plot = new Plot2DPanel();
 
-		double[] xValuesTest = new double[248];
-		double[] yValuesTest  = new double[248];
+		
+		double[] xValues = result;
+		
+		
+		double[] xValuesTest = new double[mc.numberOfProjections];
+		double[] yValuesTest  = new double[mc.numberOfProjections];
 		
 		
 		for (int i = 0; i < measuredTwoDPoints.size(); i++){
-			double[] xValues = new double[248];
-			double[] yValues = new double[248];
+//			double[] xValues = new double[mc.numberOfProjections];
+			double[] yValues = new double[mc.numberOfProjections];
 			for (int j = 0; j < measuredTwoDPoints.get(i).size(); j++){
 				xValues[(int) measuredTwoDPoints.get(i).get(j)[2]] = measuredTwoDPoints.get(i).get(j)[0];
 				yValues[(int) measuredTwoDPoints.get(i).get(j)[2]] = measuredTwoDPoints.get(i).get(j)[1];
 			}
 			
-			// just for testing
-			if (i == 0){
-				xValuesTest = Array.copy(xValues);
-				yValuesTest = Array.copy(yValues);
-			}
-			
-			
+//			// just for testing
+//			if (i == 0){
+//				xValuesTest = Array.copy(xValues);
+//				yValuesTest = Array.copy(yValues);
+//			}
+					
 			xPointsList.add(xValues);
 			yPointsList.add(yValues);
 			

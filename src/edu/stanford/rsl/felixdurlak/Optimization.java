@@ -1,4 +1,5 @@
 package edu.stanford.rsl.felixdurlak;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import edu.stanford.rsl.conrad.geometry.Projection;
@@ -36,68 +37,71 @@ public class Optimization implements GradientOptimizableFunction{
 		
 		ArrayList<ArrayList<double[]>> measuredTwoDPoints = MotionCorrection.getMeasuredTwoDPoints();
 		
-//		ArrayList<SimpleMatrix> tMatrices = new ArrayList<SimpleMatrix>();
-		
 		Projection[] projectionMatrices = Configuration.getGlobalConfiguration().getGeometry().getProjectionMatrices();
-				
+						
 		int numberOfProjections = projectionMatrices.length;
 		
-		int projectionNumber = 0;
+		int [] projectionNumber = new int[measuredTwoDPoints.size()];
 		
-		int ProjectionCounter = 0;
+		int projectionCounter = 0;
 		
 		double distance = 0;
 		
-		for (int i=0; i < numberOfProjections; i=i+6){
+		for (int i=0; i < numberOfProjections; i++){
 			
 			// create rotationMatrix and use it to create tMatrix
-			SimpleMatrix rotationMatrix = Rotations.createRotationMatrix(x[i], x[i+1], x[i+2]);
+			SimpleMatrix rotationMatrix = Rotations.createRotationMatrix(x[i*6], x[i*6+1], x[i*6+2]);
 			SimpleMatrix tMatrix = new SimpleMatrix(4,4);
 			for (int row=0; row < 3; row++){
 				for (int col=0; col < 3; col++){
 					tMatrix.setElementValue(row, col, rotationMatrix.getElement(row, col));
 				}
 			}
-			tMatrix.setElementValue(0, 3, x[i+3]);
-			tMatrix.setElementValue(1, 3, x[i+4]);
-			tMatrix.setElementValue(2, 3, x[i+5]);
+			tMatrix.setElementValue(0, 3, x[i*6+3]);
+			tMatrix.setElementValue(1, 3, x[i*6+4]);
+			tMatrix.setElementValue(2, 3, x[i*6+5]);
 			tMatrix.setElementValue(3, 3, 1);
-//			tMatrices.add(tMatrix);
 
+			
 			// integrate movement from tMatrix into projectionMatrices
 			projectionMatrices[i].setRtValue(SimpleOperators.multiplyMatrixProd(projectionMatrices[i].getRt(),tMatrix));
 			
-			
+
 			// project 3D reference points into 2D
 			SimpleVector output2Dpixel = new SimpleVector(2);
 			SimpleVector input3Dvector = new SimpleVector(3);
 			
-			input3Dvector.setElementValue(0, referenceThreeDPoints.get(i)[0]);
-			input3Dvector.setElementValue(1, referenceThreeDPoints.get(i)[1]);
-			input3Dvector.setElementValue(2, referenceThreeDPoints.get(i)[2]);
-			
-			projectionMatrices[i].project(input3Dvector, output2Dpixel);
-			
+			for (int j = 0; j < referenceThreeDPoints.size(); j++){
+				input3Dvector.setElementValue(0, referenceThreeDPoints.get(j)[0]);
+				input3Dvector.setElementValue(1, referenceThreeDPoints.get(j)[1]);
+				input3Dvector.setElementValue(2, referenceThreeDPoints.get(j)[2]);
+				
+				projectionMatrices[i].project(input3Dvector, output2Dpixel);			
+			}
+					
 			
 			// measure distance between reference points and measuredTwoDPoints for each projection present for each bead and sum it up
-			for (int j=0; j < measuredTwoDPoints.size(); j++){
-				while ((measuredTwoDPoints.get(j).get(i) != null) && (measuredTwoDPoints.get(j).get(i)[2] != projectionNumber)){
-					projectionNumber++;
-				}
-				if ((measuredTwoDPoints.get(j).get(i) != null) && measuredTwoDPoints.get(j).get(i)[2] == projectionNumber){
-					distance += Math.sqrt(Math.pow((output2Dpixel.getElement(0)-measuredTwoDPoints.get(j).get(i)[0]), 2) 
-							           + Math.pow((output2Dpixel.getElement(1)-measuredTwoDPoints.get(j).get(i)[1]), 2));
-					ProjectionCounter++;
-				}
+			for (int j=0; j < measuredTwoDPoints.size(); j++){	
+				
+				if (measuredTwoDPoints.get(j).size() > i){
+					
+					while ((measuredTwoDPoints.get(j).get(i) != null) && (measuredTwoDPoints.get(j).get(i)[2] != projectionNumber[j])){
+						projectionNumber[j]++;
+					}
+					
+					if ((measuredTwoDPoints.get(j).get(i) != null) && measuredTwoDPoints.get(j).get(i)[2] == projectionNumber[j]){
+						distance += Math.sqrt(Math.pow((output2Dpixel.getElement(0)-measuredTwoDPoints.get(j).get(i)[0]), 2) 
+								           + Math.pow((output2Dpixel.getElement(1)-measuredTwoDPoints.get(j).get(i)[1]), 2));
+						projectionCounter++;
+					}					
+				}				
 			}
-		}
-		
-		return distance/ProjectionCounter;
+		}		
+		return distance/projectionCounter;
 	}
 
 	@Override
 	public double[] gradient(double[] x, int block) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

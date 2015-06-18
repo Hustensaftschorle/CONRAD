@@ -11,10 +11,7 @@ import edu.stanford.rsl.conrad.utils.XmlUtils;
 
 public class MarkerDetection extends MarkerDetectionWorker {
 
-	public MarkerDetection() {
-		// TODO Auto-generated constructor stub
-	}
-	
+
 	public void configure() throws Exception {
 		config = Configuration.getGlobalConfiguration();
 		image = IJ.openImage(MotionCorrection.getPath());
