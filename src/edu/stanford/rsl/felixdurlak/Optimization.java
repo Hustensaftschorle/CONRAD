@@ -66,22 +66,19 @@ public class Optimization implements GradientOptimizableFunction{
 			// integrate movement from tMatrix into projectionMatrices
 			projectionMatrices[i].setRtValue(SimpleOperators.multiplyMatrixProd(projectionMatrices[i].getRt(),tMatrix));
 			
-
-			// project 3D reference points into 2D
-			SimpleVector output2Dpixel = new SimpleVector(2);
-			SimpleVector input3Dvector = new SimpleVector(3);
-			
-			for (int j = 0; j < referenceThreeDPoints.size(); j++){
+							
+			// measure distance between reference points and measuredTwoDPoints for each projection present for each bead and sum it up
+			for (int j=0; j < measuredTwoDPoints.size(); j++){	
+				
+				
+				// project 3D reference points into 2D
+				SimpleVector output2Dpixel = new SimpleVector(2);
+				SimpleVector input3Dvector = new SimpleVector(3);
 				input3Dvector.setElementValue(0, referenceThreeDPoints.get(j)[0]);
 				input3Dvector.setElementValue(1, referenceThreeDPoints.get(j)[1]);
 				input3Dvector.setElementValue(2, referenceThreeDPoints.get(j)[2]);
+				projectionMatrices[i].project(input3Dvector, output2Dpixel);	
 				
-				projectionMatrices[i].project(input3Dvector, output2Dpixel);			
-			}
-					
-			
-			// measure distance between reference points and measuredTwoDPoints for each projection present for each bead and sum it up
-			for (int j=0; j < measuredTwoDPoints.size(); j++){	
 				
 				if (measuredTwoDPoints.get(j).size() > i){
 					
@@ -96,8 +93,13 @@ public class Optimization implements GradientOptimizableFunction{
 					}					
 				}				
 			}
-		}		
-		return distance/projectionCounter;
+		}
+		double result = distance/projectionCounter;
+		if (result > 110){
+			int test = 1;
+		}
+		System.out.printf("%.12f \n", result);
+		return result;
 	}
 
 	@Override
