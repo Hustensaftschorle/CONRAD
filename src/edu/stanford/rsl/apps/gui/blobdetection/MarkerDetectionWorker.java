@@ -88,7 +88,7 @@ public class MarkerDetectionWorker {
 
 	protected ImagePlus image = null;
 
-	protected String filenamePriors = null;
+	private String filenamePriors = null;
 
 	public MarkerDetectionWorker(){
 		threeDPos = null;
@@ -585,6 +585,14 @@ public class MarkerDetectionWorker {
 
 	public double[] getRadii(){
 		return radiusOfBeads;
+	}
+
+	public boolean isConfigured() {
+		return configured;
+	}
+	
+	public void setConfigured(boolean config) {
+		configured = config;
 	}
 
 

@@ -1,5 +1,7 @@
 package edu.stanford.rsl.apps.gui.blobdetection;
 
+import ij.io.Opener;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -12,7 +14,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 import javax.swing.JFrame;
 import javax.swing.JSpinner;
 import javax.swing.JTextPane;
@@ -379,6 +380,10 @@ public class MarkerDetection extends JFrame implements ActionListener, ChangeLis
 		CONRAD.setup();
 		MarkerDetection md = new MarkerDetection();
 		md.setVisible(true);
+		
+		Opener op = new Opener();
+		op.openImage("G:\\Projektionsdaten\\WEIGHTBEARING.XA._.0004.0001.2011.09.27.17.27.22.187500.61765161.tif").show();
+		
 		//Opener op = new Opener();
 		//op.openImage("C:\\Users\\berger\\Desktop\\Result of WEIGHT-BEARING.XA._.9.Standing_Straight_2Legs244LbsTotal_248views_70kV_0.54uGy-2.tif").show("Result of WEIGHT-BEARING.XA._.9.Standing_Straight_2Legs244LbsTotal_248views_70kV_0.54uGy-2.tif");
 		//op.openImage("D:\\Data\\WeightBearing\\stanford_knee_data_jang_2013_07_08\\Weight-bearing_NO6_IR1\\Projection\\AfterPreCorrection\\WEIGHT-BEARING.XA._.9.Standing_Straight_2Legs244LbsTotal_248views_70kV_0.54uGy.tif").show();
