@@ -39,7 +39,7 @@ public class MotionCorrection {
 	private double numberOfIterations = 10;
 	private static ArrayList<ArrayList<double[]>> measuredTwoDPoints = null;
 	private static ArrayList<double[]> referenceThreeDPoints = null;
-	
+
 	private int numberOfProjections = 248;
 
 
@@ -63,11 +63,11 @@ public class MotionCorrection {
 	protected static String getPath() {
 		return path;
 	}
-	
+
 	protected static ArrayList<double[]> getReferenceThreeDPoints() {
 		return referenceThreeDPoints;
 	}
-	
+
 	protected static ArrayList<ArrayList<double[]>> getMeasuredTwoDPoints() {
 		return measuredTwoDPoints;
 	}
@@ -98,7 +98,7 @@ public class MotionCorrection {
 		}
 
 	}
-	
+
 	public double[] optimize(){
 		FunctionOptimizer fo = new FunctionOptimizer();
 		fo.setDimension(6*numberOfProjections);
@@ -114,17 +114,19 @@ public class MotionCorrection {
 		Arrays.fill(maxArray, max);
 		fo.setMinima(minArray);
 		fo.setMaxima(maxArray);
-		
+		//		fo.setNdigit(5);
+
+
 		Optimization optimizationFunction = new Optimization();
 		double [] result = fo.optimizeFunction(optimizationFunction);
-		
-//		// convert values in result from rad to degree
-//		for (int i = 0; i < result.length; i=i+6){
-//			result[i] *= 180/Math.PI;
-//			result[i+1] *= 180/Math.PI;
-//			result[i+2] *= 180/Math.PI;
-//		}
-		
+
+		//		// convert values in result from rad to degree
+		//		for (int i = 0; i < result.length; i=i+6){
+		//			result[i] *= 180/Math.PI;
+		//			result[i+1] *= 180/Math.PI;
+		//			result[i+2] *= 180/Math.PI;
+		//		}
+
 		return result;		
 	}
 
@@ -140,8 +142,8 @@ public class MotionCorrection {
 			Configuration.setGlobalConfiguration(config);
 		}
 
-//		mc.runDetection();
-		
+		//		mc.runDetection();
+
 		try {
 			measuredTwoDPoints = (ArrayList<ArrayList<double[]>>) XmlUtils.importFromXML("G:/Projektionsdaten/measured2D_13_06_15.xml");
 			referenceThreeDPoints = (ArrayList<double[]>) XmlUtils.importFromXML("G:/Projektionsdaten/reference3D_13_06_15.xml");
@@ -150,74 +152,77 @@ public class MotionCorrection {
 			e.printStackTrace();
 		}
 
-//		measuredTwoDPoints = mc.pWorker.getMeasuredTwoDPoints();
-//		referenceThreeDPoints = mc.pWorker.getReferenceThreeDPoints();
-		
-//		try {
-//			XmlUtils.exportToXML(measuredTwoDPoints);
-//			XmlUtils.exportToXML(mc.pWorker.getMergedTwoDPositions());
-//			XmlUtils.exportToXML(mc.pWorker.getReferenceThreeDPoints());
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+		//		measuredTwoDPoints = mc.pWorker.getMeasuredTwoDPoints();
+		//		referenceThreeDPoints = mc.pWorker.getReferenceThreeDPoints();
+
+		//		try {
+		//			XmlUtils.exportToXML(measuredTwoDPoints);
+		//			XmlUtils.exportToXML(mc.pWorker.getMergedTwoDPositions());
+		//			XmlUtils.exportToXML(mc.pWorker.getReferenceThreeDPoints());
+		//		} catch (Exception e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
+
 		//		ArrayList<ArrayList<double[]>> mergedTwoDPositions = mc.pWorker.getMergedTwoDPositions();
-		
-		
+
+
 		@SuppressWarnings("unused")
 		double [] result = mc.optimize();
+		
+		
+		/* 						debugging stuff                          */
 
 		//		for (int i = 0; i<16; i++){
 		//			System.out.println(measuredTwoDPoints.get(i).size());					
 		//		}
 
-		ArrayList<double[]> xPointsList = new ArrayList<double[]>();
-		ArrayList<double[]> yPointsList = new ArrayList<double[]>();
+		//		ArrayList<double[]> xPointsList = new ArrayList<double[]>();
+		//		ArrayList<double[]> yPointsList = new ArrayList<double[]>();
 
-		// create your PlotPanel (you can use it as a JPanel)
-		Plot2DPanel plot = new Plot2DPanel();
-
-		
-		double[] xValues = result;
-		
-		
-		double[] xValuesTest = new double[mc.numberOfProjections];
-		double[] yValuesTest  = new double[mc.numberOfProjections];
-		
-		
-		for (int i = 0; i < measuredTwoDPoints.size(); i++){
-//			double[] xValues = new double[mc.numberOfProjections];
-			double[] yValues = new double[mc.numberOfProjections];
-			for (int j = 0; j < measuredTwoDPoints.get(i).size(); j++){
-				xValues[(int) measuredTwoDPoints.get(i).get(j)[2]] = measuredTwoDPoints.get(i).get(j)[0];
-				yValues[(int) measuredTwoDPoints.get(i).get(j)[2]] = measuredTwoDPoints.get(i).get(j)[1];
-			}
-			
-//			// just for testing
-//			if (i == 0){
-//				xValuesTest = Array.copy(xValues);
-//				yValuesTest = Array.copy(yValues);
-//			}
-					
-			xPointsList.add(xValues);
-			yPointsList.add(yValues);
-			
-		}
-
-		// add a line plot to the PlotPanel
-		plot.addScatterPlot("xTest", xPointsList.get(0));
-		// put the PlotPanel in a JFrame, as a JPanel
-		JFrame frame = new JFrame("a plot panel");
-		frame.setSize(600, 600);
-		frame.setContentPane(plot);
-		frame.setVisible(true);
-
-		
-//		UniformCubicBSpline cspline = new UniformCubicBSpline(spline.getControlPoints(), spline.getKnots());
+		//		// create your PlotPanel
+		//		Plot2DPanel plot = new Plot2DPanel();
+		//
+		//		
+		//		double[] xValues = result;
+		//		
+		//		
+		//		double[] xValuesTest = new double[mc.numberOfProjections];
+		//		double[] yValuesTest  = new double[mc.numberOfProjections];
+		//		
+		//		
+		//		for (int i = 0; i < measuredTwoDPoints.size(); i++){
+		////			double[] xValues = new double[mc.numberOfProjections];
+		//			double[] yValues = new double[mc.numberOfProjections];
+		//			for (int j = 0; j < measuredTwoDPoints.get(i).size(); j++){
+		//				xValues[(int) measuredTwoDPoints.get(i).get(j)[2]] = measuredTwoDPoints.get(i).get(j)[0];
+		//				yValues[(int) measuredTwoDPoints.get(i).get(j)[2]] = measuredTwoDPoints.get(i).get(j)[1];
+		//			}
+		//			
+		////			// just for testing
+		////			if (i == 0){
+		////				xValuesTest = Array.copy(xValues);
+		////				yValuesTest = Array.copy(yValues);
+		////			}
+		//					
+		//			xPointsList.add(xValues);
+		//			yPointsList.add(yValues);
+		//			
+		//		}
+		//
+		//		// add a line plot to the PlotPanel
+		//		plot.addScatterPlot("xTest", xPointsList.get(0));
+		//		// put the PlotPanel in a JFrame, as a JPanel
+		//		JFrame frame = new JFrame("a plot panel");
+		//		frame.setSize(600, 600);
+		//		frame.setContentPane(plot);
+		//		frame.setVisible(true);
 
 
-		
+		//		UniformCubicBSpline cspline = new UniformCubicBSpline(spline.getControlPoints(), spline.getKnots());
+
+
+
 
 	}
 

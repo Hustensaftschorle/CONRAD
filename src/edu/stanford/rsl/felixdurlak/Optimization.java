@@ -82,6 +82,7 @@ public class Optimization implements GradientOptimizableFunction{
 				
 				if (measuredTwoDPoints.get(j).size() > i){
 					
+					// handling missing projections (bead was not recognized in projection)
 					while ((measuredTwoDPoints.get(j).get(i) != null) && (measuredTwoDPoints.get(j).get(i)[2] != projectionNumber[j])){
 						projectionNumber[j]++;
 					}
@@ -95,9 +96,6 @@ public class Optimization implements GradientOptimizableFunction{
 			}
 		}
 		double result = distance/projectionCounter;
-		if (result > 110){
-			int test = 1;
-		}
 		System.out.printf("%.12f \n", result);
 		return result;
 	}
