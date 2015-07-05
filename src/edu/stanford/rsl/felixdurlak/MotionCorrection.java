@@ -19,6 +19,7 @@ import edu.stanford.rsl.conrad.utils.FileUtil;
 import edu.stanford.rsl.conrad.utils.XmlUtils;
 import edu.stanford.rsl.jpop.FunctionOptimizer;
 import edu.stanford.rsl.jpop.FunctionOptimizer.OptimizationMode;
+import edu.stanford.rsl.jpop.OptimizationOutputFunction;
 import edu.stanford.rsl.apps.gui.RawDataOpener;
 import edu.stanford.rsl.apps.gui.blobdetection.AutomaticMarkerDetectionWorker;
 import edu.stanford.rsl.apps.gui.blobdetection.MarkerDetectionWorker;
@@ -106,26 +107,26 @@ public class MotionCorrection {
 		fo.setConsoleOutput(false);
 		double[] x = new double[6*numberOfProjections];
 		fo.setInitialX(x);
-		double min = -10;
-		double max = 10;
+		double min = -20;
+		double max = 20;
 		double[] minArray = new double[6*numberOfProjections];
 		double[] maxArray = new double[6*numberOfProjections];
 		Arrays.fill(minArray, min);
 		Arrays.fill(maxArray, max);
 		fo.setMinima(minArray);
 		fo.setMaxima(maxArray);
-		//		fo.setNdigit(5);
-
+		fo.setNdigit(6);
 
 		Optimization optimizationFunction = new Optimization();
+		
 		double [] result = fo.optimizeFunction(optimizationFunction);
 
-		//		// convert values in result from rad to degree
-		//		for (int i = 0; i < result.length; i=i+6){
-		//			result[i] *= 180/Math.PI;
-		//			result[i+1] *= 180/Math.PI;
-		//			result[i+2] *= 180/Math.PI;
-		//		}
+//				// convert values in result from rad to degree
+//				for (int i = 0; i < result.length; i=i+6){
+//					result[i] *= 180/Math.PI;
+//					result[i+1] *= 180/Math.PI;
+//					result[i+2] *= 180/Math.PI;
+//				}
 
 		return result;		
 	}
@@ -169,6 +170,7 @@ public class MotionCorrection {
 
 		@SuppressWarnings("unused")
 		double [] result = mc.optimize();
+		System.out.printf("Zach - fedditsch");
 		
 		
 		/* 						debugging stuff                          */
